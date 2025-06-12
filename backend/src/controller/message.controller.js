@@ -67,10 +67,7 @@ export const getMessages = async (req, res) => {
   try {
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
-
-    console.log("📨 Fetching messages between:", senderId, "and", receiverId);
-
-    // ObjectId me convert karna zaroori hai
+    // Find the conversation between the two users
     const conversation = await Conversation.findOne({
       participants: {
         $all: [
@@ -78,20 +75,22 @@ export const getMessages = async (req, res) => {
           new mongoose.Types.ObjectId(receiverId)
         ]
       }
-    }).populate("messages");
-
+    }).populate({
+      path: 'messages',
+      options: { sort: { createdAt: 1 } }
+    });
     if (!conversation) {
       return res
-        .status(404)
-        .json({ message: "Conversation nahi mila." });
+        .status(200) // Changed to 200 as it's not really an error
+        .json({ messages: [] }); // Return empty array if no conversation exists
     }
-
     return res.status(200).json({ messages: conversation.messages });
   } catch (error) {
     console.error("❌ Error fetching messages:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 // export const getMessages = async (req, res) => {
 //   try {
