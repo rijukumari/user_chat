@@ -82,7 +82,7 @@ export const getMessages = async (req, res) => {
     if (!conversation) {
       return res
         .status(200) // Changed to 200 as it's not really an error
-        .json({ messages: [] }); // Return empty array if no conversation exists
+        .json({ messages: [] }); // Return empty array if msg not  exists
     }
     return res.status(200).json({ messages: conversation.messages });
   } catch (error) {
